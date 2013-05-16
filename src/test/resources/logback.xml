@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+    </layout>
+    <Filter class="de.inoio.logback_backlog.BurstFilter">
+      <param name="level" value="ERROR"/>
+      <param name="burstRecoveryAmount" value="10"/>
+      <param name="burstRecoveryInterval" value="6"/>
+      <param name="maxBurst" value="100"/>
+    </Filter>
+  </appender>
+
+  <root level="debug">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
