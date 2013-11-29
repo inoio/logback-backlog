@@ -10,14 +10,14 @@ configuration file. For example, the following configuration limits the number o
 statements that can be sent to the console to a burst of 100 and allows a maximum of 10 log statements to be
 sent to the appender every 6 seconds after that burst.
 
-Here's a sample how to use it in a [logback.xml](src/test/resources/logback.xml):
+Here's a sample how to use it in your `logback.xml`:
 
 ```xml
 <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
   <layout class="ch.qos.logback.classic.PatternLayout">
     <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
   </layout>
-  <Filter class="BurstFilter">
+  <Filter class="de.inoio.logback_backlog.BurstFilter">
     <param name="level" value="INFO"/>
     <param name="burstRecoveryAmount" value="10"/>
     <param name="burstRecoveryInterval" value="6"/>
