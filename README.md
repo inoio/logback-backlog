@@ -10,6 +10,8 @@ configuration file. For example, the following configuration limits the number o
 statements that can be sent to the console to a burst of 100 and allows a maximum of 10 log statements to be
 sent to the appender every 6 seconds after that burst.
 
+Here's a sample how to use it in a [logback.xml](src/test/resources/logback.xml):
+
 ```xml
 <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
   <layout class="ch.qos.logback.classic.PatternLayout">
