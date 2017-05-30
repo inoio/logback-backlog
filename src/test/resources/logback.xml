@@ -5,7 +5,7 @@
       <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
     </layout>
     <Filter class="de.inoio.logback_backlog.BurstFilter">
-      <param name="level" value="ERROR"/>
+      <param name="level" value="INFO"/>
       <param name="burstRecoveryAmount" value="10"/>
       <param name="burstRecoveryInterval" value="6"/>
       <param name="maxBurst" value="100"/>
