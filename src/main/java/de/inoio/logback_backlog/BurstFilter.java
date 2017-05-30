@@ -10,7 +10,7 @@
 package de.inoio.logback_backlog;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 
@@ -43,7 +43,7 @@ import ch.qos.logback.core.spi.FilterReply;
  * @author Chad LaVigne
  * 
  */
-public class BurstFilter extends Filter<LoggingEvent> {
+public class BurstFilter extends Filter<ILoggingEvent> {
 	/**
 	 * Level of messages to be filtered. Anything at or below this level will be
 	 * filtered out if <code>maxBurst</code> has been exceeded. The default is
@@ -75,13 +75,23 @@ public class BurstFilter extends Filter<LoggingEvent> {
 	 * <code>burstRecoveryInterval</code> seconds.
 	 */
 	private long maxBurst;
+	
+	/**
+     * Amount of neutral decisions
+     */
+    private long neutralCount;
+    
+    /**
+     * Amount of deny decisions
+     */
+    private long denyCount;
 
 	/**
 	 * Token bucket implementation to throttle the number of messages that can
 	 * be logged to an appender using this filter.
 	 */
 	private TokenBucket tokenBucket;
-
+	
 	/**
 	 * Decide if we're going to log <code>event</code> based on whether the
 	 * maximum burst of log statements has been exceeded.
@@ -89,7 +99,7 @@ public class BurstFilter extends Filter<LoggingEvent> {
 	 * @see ch.qos.logback.core.filter.Filter#decide(java.lang.Object)
 	 */
 	@Override
-	public FilterReply decide(LoggingEvent event) {
+	public FilterReply decide(ILoggingEvent event) {
 		// initialize tokenBucket here because the burstRecoveryAmount,
 		// burstRecoveryInterval & maxBurst attributes get set
 		// via logback.xml configuration when it instantiates the filter
@@ -97,8 +107,15 @@ public class BurstFilter extends Filter<LoggingEvent> {
 		if (tokenBucket == null) {
 			tokenBucket = new TokenBucket(burstRecoveryAmount, burstRecoveryInterval, maxBurst);
 		}
+		
+		if ( event.getLevel().toInt() >= level.toInt() && tokenBucket.getToken()){
+		  neutralCount++;
+		  return FilterReply.NEUTRAL;
+		}else{
+		  denyCount++;
+		  return FilterReply.DENY;
+		}
 
-		return event.getLevel().toInt() > level.toInt() || tokenBucket.getToken() ? FilterReply.NEUTRAL : FilterReply.DENY;
 	}
 
 	/**
@@ -161,6 +178,21 @@ public class BurstFilter extends Filter<LoggingEvent> {
 		this.maxBurst = maxBurst;
 	}
 
+	/**
+     * @return the neutralCount (Test purposes)
+     */
+	public long getNeutralCount() {
+      return neutralCount;
+    }
+	
+	/**
+     * @return the denyCount (Test purposes)
+     */
+	public long getDenyCount() {
+      return denyCount;
+    }
+	
+	
 	/**
 	 * 
 	 * Simple Token Bucket implementation to control traffic bursts. The
